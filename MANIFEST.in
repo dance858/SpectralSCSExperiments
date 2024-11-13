@@ -1,0 +1,17 @@
+graft src 
+graft test 
+graft scs_source
+graft scs_source/src
+graft scs_source/test
+graft scs_source/test/problems
+graft scs_source/include
+graft scs_source/linsys
+graft scs_source/linsys/cpu
+graft scs_source/linsys/cpu/direct
+graft scs_source/linsys/cpu/indirect
+graft scs_source/linsys/gpu
+graft scs_source/linsys/gpu/indirect
+graft scs_source/linsys/external
+graft scs_source/linsys/external/amd
+graft scs_source/linsys/external/qdldl
+include LICENSE
