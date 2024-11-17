@@ -16,6 +16,9 @@ def read_data(loaded_data):
     all_vector_proj_times = loaded_data['all_vector_proj_times']
     all_cone_times = loaded_data['all_cone_times']
     all_lin_sys_times = loaded_data['all_lin_sys_times']
+
+    all_total_times_logdet = all_lin_sys_times[:, :, 0] + all_solve_times[:, :, 0]
+    all_total_times_standard = all_lin_sys_times[:, :, 1] + all_solve_times[:, :, 1]
     
     avg_all_iter_logdet = np.mean(all_iter[:, :, 0], axis=0)
     avg_all_solve_times_logdet = np.mean(all_solve_times[:, :, 0], axis=0)
@@ -34,8 +37,10 @@ def read_data(loaded_data):
     avg_all_total_time_standard = (avg_all_solve_times_standard + avg_all_lin_sys_times_standard) / 1000
 
     speedup = avg_all_total_time_standard / avg_all_total_time_logdet
-    print("speedup: ", speedup)
-    print("average speedup: ", np.mean(speedup))
+    print("speedup exp design:                           ", speedup)
+    print("average speedup exp design:                   ", np.mean(speedup))
+    print("speedup computed other way exp design:        ", np.mean(all_total_times_standard / all_total_times_logdet))
+    print("\n")
 
     avg_time_per_iter_logdet =  avg_all_total_time_logdet / avg_all_iter_logdet
     avg_time_per_iter_standard = avg_all_total_time_standard / avg_all_iter_standard
@@ -52,9 +57,7 @@ def read_data(loaded_data):
 
 SUBTRACT = 14
 SUBTRACT2 = 5
-###############################################################################
-#                       TOP ROW
-###############################################################################
+
 loaded_data = np.load('data/exp_design_data_tol=0.0001.npz')
 all_n, avg_all_iter_logdet, avg_all_solve_times_logdet, \
 avg_all_matrix_proj_times_logdet, avg_all_vector_proj_times_logdet, \
@@ -63,6 +66,25 @@ avg_time_per_iter_logdet, avg_all_total_time_logdet, avg_all_iter_standard,  \
 avg_all_solve_times_standard, avg_all_matrix_proj_times_standard, \
 avg_all_cone_times_standard, avg_all_lin_sys_times_standard, \
 avg_time_per_iter_standard, avg_all_total_time_standard = read_data(loaded_data)
+
+# ----------------------------------------------------------------------------
+#                   plot spectral vector cone time
+# ----------------------------------------------------------------------------
+plt.figure(figsize=(8, 8))
+plt.plot(all_n, avg_all_vector_proj_times_logdet, marker='o', linestyle = "--", markersize=MARKER_SIZE, linewidth=LINEWIDTH)
+plt.plot(all_n, avg_all_matrix_proj_times_logdet, marker='s', linestyle = "--", markersize=MARKER_SIZE, linewidth=LINEWIDTH)
+plt.tick_params(axis='both', which='major', labelsize=TICK_SIZE_Y)
+plt.subplots_adjust(left=0.20, bottom=0.15, right=0.98, top=0.95)
+plt.xlabel(r'$n$', fontsize=FONTSIZE_X_AXIS)
+plt.ylabel('time (ms)', fontsize=FONTSIZE_Y_AXIS)
+plt.yscale('log')
+plt.grid(True)#, which="both", linestyle='--', linewidth=0.5)
+plt.savefig(f"figures/exp_design_ablation_high_tol.pdf")
+
+
+###############################################################################
+#                       TOP ROW
+###############################################################################
 fig, (ax1, ax2) = plt.subplots(2, 4, figsize=(32, 14), sharey=False, sharex=True)
 ax1[0].plot(all_n, avg_all_total_time_logdet, label='SpectralSCS', marker='o', linestyle = "--", markersize=MARKER_SIZE, linewidth=LINEWIDTH)
 ax1[0].plot(all_n, avg_all_total_time_standard, label='SCS', marker='s', linestyle = "--", markersize=MARKER_SIZE, linewidth=LINEWIDTH)
@@ -101,6 +123,9 @@ ax1[3].yaxis.set_major_formatter(formatter)
 ax1[3].yaxis.get_offset_text().set_fontsize(FONTSIZE_Y_AXIS - SUBTRACT2)
 
 fig.legend(fontsize=LEGEND_SIZE, loc='upper center', bbox_to_anchor=(0.52, 1), ncol=2)
+
+
+
 ###############################################################################
 #                       Bottom row
 ###############################################################################
@@ -170,4 +195,4 @@ plt.xlabel(r'$n$', fontsize=FONTSIZE_X_AXIS)
 plt.ylabel('time (ms)', fontsize=FONTSIZE_Y_AXIS)
 plt.yscale('log')
 plt.grid(True)#, which="both", linestyle='--', linewidth=0.5)
-plt.savefig(f"figures/exp_design_ablation.pdf")
+plt.savefig(f"figures/exp_design_ablation_;ow_tol.pdf")

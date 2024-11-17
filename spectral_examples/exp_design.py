@@ -33,10 +33,10 @@ def SpectralSCS_solve(F, csv_filename):
     data = {'A': sp.csc_matrix(A), 'b': b, 'c': c}
     if csv_filename == None:
         solver = scs.SCS(data, K, adaptive_scale=False, eps_abs=tol, eps_rel=tol,
-                     max_iters=int(1e4), verbose=False)
+                     max_iters=int(1e4), verbose=True)
     else:
         solver = scs.SCS(data, K, adaptive_scale=False, eps_abs=tol, eps_rel=tol,
-                     max_iters=int(1e4), verbose=False, log_csv_filename=csv_filename)
+                     max_iters=int(1e4), verbose=True, log_csv_filename=csv_filename)
     sol = solver.solve()
     return sol
 
@@ -50,11 +50,11 @@ def SCS_solve(F):
     for i in range(0, p):
         constraints.append(cp.quad_form(F[:, i], W) <= 1)
     problem = cp.Problem(objective, constraints)
-    problem.solve(verbose=False, solver=cp.SCS, eps_abs=tol, eps_rel=tol, max_iters=int(1e4))
+    problem.solve(verbose=True, solver=cp.SCS, eps_abs=tol, eps_rel=tol, max_iters=int(1e4))
     return problem.solution
 
-all_n = [50, 100, 150]
-num_runs = 1
+all_n = [50, 100, 150, 200, 250, 300]
+num_runs = 5
 all_iter = np.zeros((num_runs, len(all_n), 2))
 all_solve_times = np.zeros((num_runs, len(all_n), 2))
 all_matrix_proj_times = np.zeros((num_runs, len(all_n), 2))
@@ -107,8 +107,8 @@ if solve_with_SCS:
             all_solve_times[run, i, 1] = info_cvxpy['solve_time']
             all_iter[run, i, 1] = info_cvxpy['iter']
             all_matrix_proj_times[run, i, 1] = info_cvxpy['ave_time_matrix_cone_proj']
-            all_cone_times[run, i, 1] = sol_logdet['info']['cone_time'] 
-            all_lin_sys_times[run, i, 1] = sol_logdet['info']['lin_sys_time'] 
+            all_cone_times[run, i, 1] = info_cvxpy['cone_time']         
+            all_lin_sys_times[run, i, 1] = info_cvxpy['lin_sys_time']     
 
 np.savez(f'plotting/data/exp_design_data_tol={tol}.npz', 
         all_n=all_n,

@@ -6,22 +6,25 @@ from SIZES_FIGURES import MARKER_SIZE, FONTSIZE_Y_AXIS, LINEWIDTH, FONTSIZE_X_AX
 from matplotlib.ticker import ScalarFormatter, LogFormatter
 
 sns.set_theme(style="whitegrid")
-loaded_data = np.load('sparse_inv_run_data.npz')
-
-# Access the arrays by their saved names
+loaded_data = np.load('data/sparse_inv.npz')
 all_n = loaded_data['all_n']
-all_iter_logdet = loaded_data['all_iter_logdet']
-all_solve_times_logdet = loaded_data['all_solve_times_logdet']
-all_matrix_proj_times_logdet = loaded_data['all_matrix_proj_times_logdet']
-all_vector_proj_times_logdet = loaded_data['all_vector_proj_times_logdet']
-all_cone_times_logdet = loaded_data['all_cone_times_logdet']
-all_lin_sys_times_logdet = loaded_data['all_lin_sys_times_logdet']
-all_iter_standard = loaded_data['all_iter_standard']
-all_solve_times_standard = loaded_data['all_solve_times_standard']
-all_matrix_proj_times_standard = loaded_data['all_matrix_proj_times_standard']
-all_cone_times_standard = loaded_data['all_cone_times_standard']
-all_lin_sys_times_standard = loaded_data['all_lin_sys_times_standard']
-
+all_iter = loaded_data['all_iter']
+all_solve_times = loaded_data['all_solve_times']
+all_matrix_proj_times = loaded_data['all_matrix_proj_times']
+all_vector_proj_times = loaded_data['all_vector_proj_times']
+all_cone_times = loaded_data['all_cone_times']
+all_lin_sys_times = loaded_data['all_lin_sys_times']
+all_iter_logdet = all_iter[:, :, 0]
+all_solve_times_logdet = all_solve_times[:, :, 0]
+all_matrix_proj_times_logdet = all_matrix_proj_times[:, :, 0]
+all_vector_proj_times_logdet = all_vector_proj_times
+all_cone_times_logdet = all_cone_times[:, :, 0]
+all_lin_sys_times_logdet =  all_lin_sys_times[:, :, 0]
+all_iter_standard = all_iter[:, :, 1]
+all_solve_times_standard = all_solve_times[:, :, 1]
+all_matrix_proj_times_standard = all_matrix_proj_times[:, :, 1]
+all_cone_times_standard = all_cone_times[:, :, 1]
+all_lin_sys_times_standard = all_lin_sys_times[:, :, 1]
 avg_all_iter_logdet = np.mean(all_iter_logdet, axis=0)
 avg_all_solve_times_logdet = np.mean(all_solve_times_logdet, axis=0)
 avg_all_matrix_proj_times_logdet = np.mean(all_matrix_proj_times_logdet, axis=0)
@@ -33,13 +36,13 @@ avg_all_solve_times_standard = np.mean(all_solve_times_standard, axis=0)
 avg_all_matrix_proj_times_standard = np.mean(all_matrix_proj_times_standard, axis=0)
 avg_all_cone_times_standard = np.mean(all_cone_times_standard, axis=0)
 avg_all_lin_sys_times_standard = np.mean(all_lin_sys_times_standard, axis=0)
-
 avg_all_total_time_logdet = (avg_all_solve_times_logdet + avg_all_lin_sys_times_logdet) / 1000
 avg_all_total_time_standard = (avg_all_solve_times_standard + avg_all_lin_sys_times_standard) / 1000
-
 avg_all_iter_time_logdet =  avg_all_total_time_logdet / avg_all_iter_logdet
 avg_all_iter_time_standard = avg_all_total_time_standard / avg_all_iter_standard
 
+all_total_times_standard = all_lin_sys_times_standard + all_solve_times_standard
+all_total_times_logdet = all_lin_sys_times_logdet + all_solve_times_logdet
 
 SUBTRACT = 14
 SUBTRACT2 = 5
@@ -93,10 +96,12 @@ axs[3].yaxis.get_offset_text().set_fontsize(FONTSIZE_Y_AXIS - SUBTRACT2)
 fig.legend(fontsize=LEGEND_SIZE, loc='upper center', bbox_to_anchor=(0.52, 1.01), ncol=2)
 
 speedup = avg_all_total_time_standard / avg_all_total_time_logdet
-print("speed up factor: ", speedup)
-print("average speed up: ", np.mean(speedup))
+print("speed up factor sparse inverse:   ", speedup)
+print("average speed up sparse inverse:  ", np.mean(speedup))
+print("speedup computed other way:    ", np.mean(all_total_times_standard / all_total_times_logdet), "\n")
+
 plt.subplots_adjust(left=0.05, right=0.98, top=0.83, wspace=0.3)
-plt.savefig("sparse_inv_new.pdf")
+plt.savefig("figures/sparse_inv_new.pdf")
 
 # ----------------------------------------------------------------------------
 #                   plot spectral vector cone time

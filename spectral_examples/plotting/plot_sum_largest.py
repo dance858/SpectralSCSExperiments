@@ -7,24 +7,31 @@ from matplotlib.ticker import ScalarFormatter, LogFormatter
 
 p = 0.01
 sns.set_theme(style="whitegrid")
-loaded_data = np.load(f"sum_largest_evals_run_p={p}_old.npz")
+loaded_data = np.load(f"data/graph_partitioning.npz")
 
 SUBTRACT = 14
 SUBTRACT2 = 5
 
+all_n = loaded_data['all_n']
+all_iter = loaded_data['all_iter']
+all_solve_times = loaded_data['all_solve_times']
+all_matrix_proj_times = loaded_data['all_matrix_proj_times']
+all_vector_proj_times = loaded_data['all_vector_proj_times']
+all_cone_times = loaded_data['all_cone_times']
+all_lin_sys_times = loaded_data['all_lin_sys_times']
+
 # Access the arrays by their saved names
-all_n = loaded_data['all_n'][0:5]
-all_iter_logdet = loaded_data['all_iter_logdet'][:, 0:5]
-all_solve_times_logdet = loaded_data['all_solve_times_logdet'][:, 0:5]
-all_matrix_proj_times_logdet = loaded_data['all_matrix_proj_times_logdet'][:, 0:5]
-all_vector_proj_times_logdet = loaded_data['all_vector_proj_times_logdet'][:, 0:5]
-all_cone_times_logdet = loaded_data['all_cone_times_logdet'][:, 0:5]
-all_lin_sys_times_logdet = loaded_data['all_lin_sys_times_logdet'][:, 0:5]
-all_iter_standard = loaded_data['all_iter_standard'][:, 0:5]
-all_solve_times_standard = loaded_data['all_solve_times_standard'][:, 0:5]
-all_matrix_proj_times_standard = loaded_data['all_matrix_proj_times_standard'][:, 0:5]
-all_cone_times_standard = loaded_data['all_cone_times_standard'][:,0:5]
-all_lin_sys_times_standard = loaded_data['all_lin_sys_times_standard'][:, 0:5]
+all_iter_logdet = all_iter[:, :, 0]
+all_solve_times_logdet = all_solve_times[:, :, 0]
+all_matrix_proj_times_logdet = all_matrix_proj_times[:, :, 0]
+all_vector_proj_times_logdet = all_vector_proj_times
+all_cone_times_logdet = all_cone_times[:, :, 0]
+all_lin_sys_times_logdet =  all_lin_sys_times[:, :, 0]
+all_iter_standard = all_iter[:, :, 1]
+all_solve_times_standard = all_solve_times[:, :, 1]
+all_matrix_proj_times_standard = all_matrix_proj_times[:, :, 1]
+all_cone_times_standard = all_cone_times[:, :, 1]
+all_lin_sys_times_standard = all_lin_sys_times[:, :, 1]
 
 
 avg_all_iter_logdet = np.mean(all_iter_logdet, axis=0)
@@ -45,9 +52,9 @@ avg_all_total_time_standard = (avg_all_solve_times_standard + avg_all_lin_sys_ti
 avg_all_iter_time_logdet =  avg_all_total_time_logdet / avg_all_iter_logdet
 avg_all_iter_time_standard = avg_all_total_time_standard / avg_all_iter_standard
 
-speedup = avg_all_total_time_standard / avg_all_total_time_logdet
-print("speedup: ", speedup)
-print("average speedup: ", np.mean(speedup))
+all_total_times_standard = all_lin_sys_times_standard + all_solve_times_standard
+all_total_times_logdet = all_lin_sys_times_logdet + all_solve_times_logdet
+
 
 # --------------------------------------------------------------------------
 #                             plot stats
@@ -57,7 +64,6 @@ axs[0].plot(all_n, avg_all_total_time_logdet, label='SpectralSCS', marker='o', l
 axs[0].plot(all_n, avg_all_total_time_standard, label='SCS', marker='s', linestyle = "--", markersize=MARKER_SIZE, linewidth=LINEWIDTH)
 axs[0].set_ylabel("runtime (s)", fontsize=FONTSIZE_Y_AXIS)
 axs[0].grid(True)
-#axs[0].legend(fontsize=12)
 axs[1].plot(all_n, avg_all_iter_logdet, marker='o', linestyle = "--", markersize=MARKER_SIZE, linewidth=LINEWIDTH)
 axs[1].plot(all_n, avg_all_iter_standard, marker='s', linestyle = "--", markersize=MARKER_SIZE, linewidth=LINEWIDTH)
 axs[1].grid(True)
@@ -98,10 +104,11 @@ axs[3].yaxis.get_offset_text().set_fontsize(FONTSIZE_Y_AXIS - SUBTRACT2)
 fig.legend(fontsize=LEGEND_SIZE, loc='upper center', bbox_to_anchor=(0.52, 1.01), ncol=2)
 
 speedup = avg_all_total_time_standard / avg_all_total_time_logdet
-print("speed up factor: ", speedup)
-print("average speed up: ", np.mean(speedup))
+print("speed up factor graph partitioning:   ", speedup)
+print("average speed up graph partitioning:  ", np.mean(speedup))
+print("speedup computed other way:           ", np.mean(all_total_times_standard / all_total_times_logdet), "\n")
 plt.subplots_adjust(left=0.05, right=0.98, top=0.83, wspace=0.3)
-plt.savefig("graph_part_new.pdf")
+plt.savefig("figures/graph_part_new.pdf")
 
 
 

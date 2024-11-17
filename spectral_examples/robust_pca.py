@@ -63,9 +63,8 @@ def generate_data(m, n, rank):
     return M, mu
 
 all_m =  [100, 150, 200, 250, 300]
-all_m =  [100, 150, 200]#, 250, 300]
 rank = 10
-num_runs = 1
+num_runs = 5
 all_iter = np.zeros((num_runs, len(all_m), 2))
 all_solve_times = np.zeros((num_runs, len(all_m), 2))
 all_matrix_proj_times = np.zeros((num_runs, len(all_m), 2))
@@ -117,9 +116,9 @@ if solve_with_SCS:
             info_cvxpy = sol_cvxpy.attr['solver_specific_stats']['info']
             all_solve_times[run, i, 1] = info_cvxpy['solve_time']
             all_iter[run, i, 1] = info_cvxpy['iter']
-            all_matrix_proj_times[run, i, 1] = info_cvxpy['ave_time_matrix_cone_proj']  
-            all_cone_times[run, i, 1] = sol_logdet['info']['cone_time'] 
-            all_lin_sys_times[run, i, 1] = sol_logdet['info']['lin_sys_time'] 
+            all_matrix_proj_times[run, i, 1] = info_cvxpy['ave_time_matrix_cone_proj']
+            all_cone_times[run, i, 1] = info_cvxpy['cone_time']         
+            all_lin_sys_times[run, i, 1] = info_cvxpy['lin_sys_time']
 
         
 np.savez(f'plotting/data/robust_pca_ratio={ratio}.npz', 

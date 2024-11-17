@@ -78,7 +78,7 @@ def SCS_solve(S, n, reg):
 all_rho =    [0.1,  0.075,  0.06,  0.045,  0.045,   0.038]
 all_n =      [50,     100,   150,    200,   250,     300]
 densities =  [0.03, 0.020, 0.020,  0.018, 0.016,   0.014]
-num_runs = 1
+num_runs = 5
 all_iter = np.zeros((num_runs, len(all_n), 2))
 all_solve_times = np.zeros((num_runs, len(all_n), 2))
 all_matrix_proj_times = np.zeros((num_runs, len(all_n), 2))
@@ -130,8 +130,8 @@ if solve_with_SCS:
             all_solve_times[run, i, 1] = info_cvxpy['solve_time']
             all_iter[run, i, 1] = info_cvxpy['iter']
             all_matrix_proj_times[run, i, 1] = info_cvxpy['ave_time_matrix_cone_proj']
-            all_cone_times[run, i, 1] = sol_logdet['info']['cone_time'] 
-            all_lin_sys_times[run, i, 1] = sol_logdet['info']['lin_sys_time'] 
+            all_cone_times[run, i, 1] = info_cvxpy['cone_time']         
+            all_lin_sys_times[run, i, 1] = info_cvxpy['lin_sys_time']
 
 np.savez(f'plotting/data/sparse_inv.npz', 
         all_n=all_n,
