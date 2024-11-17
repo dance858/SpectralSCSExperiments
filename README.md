@@ -7,7 +7,8 @@ If you wish to use SCS as a solver, you should *NOT* use this repository but ins
 2. **Running experiments**: Place yourself in the folder `spectral_examples` and run the script `run_script.sh`.
 3. **Plotting**: Place yourself in the folder `spectral_examples/plotting` and run the script `run_plots.sh`.
 
-The second step takes about XXX hours. After the third step, several figures will appear in the folder `spectral_examples/plotting/figures`.
+The second step takes about 48 hours to run sequentially (data files containing the results can be found in the folder `spectral_examples/plotting/data`). 
+After the third step, several figures will appear in the folder `spectral_examples/plotting/figures`.
 
 
 ## Citing
